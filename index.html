@@ -204,7 +204,7 @@ body {
     <div class="drop-zone" id="dropZone">
         <h2>Drag and Drop Audio Files Here</h2>
         <p>or</p>
-        <button class="button" onclick="document.getElementById('fileInput').click()">Select Files</button>
+        <button class="button" onclick="document.getElementById(&apos;fileInput&apos;).click()">Select Files</button>
         <input type="file" id="fileInput" multiple accept=".wav" style="display: none">
     </div>
 
@@ -221,6 +221,7 @@ body {
         </div>
         <div style="display: flex; justify-content: center; gap: 10px; margin: 20px 0;">
             <button class="button generate-button" id="generateSequence">Generate Note Sequence</button>
+            <button class="button generate-button" id="enharmonicShift">Enharmonic Shift</button>
             <button class="button generate-button" id="generateRoundRobin">Generate Round Robin Groups</button>
             <button class="button" id="resetButton">Reset</button>
             <button class="button" id="updateNamesButton">Update File Names</button>
@@ -252,6 +253,7 @@ body {
   const resetButton = document.getElementById('resetButton');
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   let manualFiles = [];
+  let sharpToFlat = true;
   function getMIDINoteInfo(midiNumber) {
     const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const octave = Math.floor(midiNumber / 12) - 1;
@@ -372,34 +374,34 @@ body {
     fileList.appendChild(buttonGroup);
     let previewContent = '';
     if (manualFiles.length > 0) {
-        previewContent = manualFiles.join('\n');
+      previewContent = manualFiles.join('\n');
     } else if (files && files.length > 0) {
-        const baseFileName = manualFilenameInput.value.trim() || 'Unnamed';
-        const noteGroups = new Map();
-        [...files].forEach(file => {
-            const fileName = file.name;
-            const noteMatch = fileName.match(/([A-G]#?\d+)-V\d+/);
-            if (noteMatch) {
-                const noteName = noteMatch[1];
-                const midiNumber = noteNameToMIDINumber(noteName);
-                const key = noteName;
-                if (!noteGroups.has(key)) {
-                    noteGroups.set(key, []);
-                }
-                noteGroups.get(key).push({
-                    originalName: fileName,
-                    noteName: noteName,
-                    midiNumber: midiNumber
-                });
-            }
+      const baseFileName = manualFilenameInput.value.trim() || 'Unnamed';
+      const noteGroups = new Map();
+      [...files].forEach(file => {
+        const fileName = file.name;
+        const noteMatch = fileName.match(/([A-G]#?\d+)-V\d+/);
+        if (noteMatch) {
+          const noteName = noteMatch[1];
+          const midiNumber = noteNameToMIDINumber(noteName);
+          const key = noteName;
+          if (!noteGroups.has(key)) {
+            noteGroups.set(key, []);
+          }
+          noteGroups.get(key).push({
+            originalName: fileName,
+            noteName: noteName,
+            midiNumber: midiNumber
+          });
+        }
+      });
+      noteGroups.forEach((filesInGroup, noteKey) => {
+        filesInGroup.forEach((fileInfo, index) => {
+          if (fileInfo.midiNumber) {
+            previewContent += `${fileInfo.originalName} -> ${String(fileInfo.midiNumber).padStart(2, '0')}_${fileInfo.noteName}_${baseFileName}_${index + 1}\n`;
+          }
         });
-        noteGroups.forEach((filesInGroup, noteKey) => {
-            filesInGroup.forEach((fileInfo, index) => {
-                if (fileInfo.midiNumber) {
-                    previewContent += `${fileInfo.originalName} -> ${String(fileInfo.midiNumber).padStart(2, '0')}_${fileInfo.noteName}_${baseFileName}_${index + 1}\n`;
-                }
-            });
-        });
+      });
     }
     previewArea.value = previewContent.trim();
   }
@@ -425,10 +427,6 @@ body {
   }
   function generateNoteSequence() {
     const baseFileName = manualFilenameInput.value.trim();
-    if (!baseFileName) {
-      updateFileList(fileInput.files);
-      return;
-    }
     const startMIDI = noteNameToMIDINumber(startNoteSelect.value);
     const endMIDI = noteNameToMIDINumber(endNoteSelect.value);
     if (startMIDI === null || endMIDI === null) {
@@ -449,7 +447,10 @@ body {
     manualFiles = [];
     for (let midi = startMIDI; midi <= endMIDI; midi++) {
       const noteName = getMIDINoteInfo(midi).noteName;
-      const newFileName = `${String(midi).padStart(2, '0')}_${noteName}_${baseFileName}`;
+      let newFileName = `${String(midi).padStart(2, '0')}_${noteName}`;
+      if (baseFileName) {
+        newFileName += `_${baseFileName}`;
+      }
       manualFiles.push(newFileName);
     }
     updateFileList(fileInput.files);
@@ -514,6 +515,53 @@ body {
     status.className = 'status';
     status.textContent = '';
   }
+  function enharmonicShift() {
+    sharpToFlat = !sharpToFlat;
+    const previewArea = document.getElementById('previewArea');
+    let currentText = previewArea.value;
+    if (currentText) {
+      const lines = currentText.split('\n');
+      const updatedLines = lines.map(line => {
+        return line.replace(/([A-G])(#?)(-?\d+)/g, (match, note, accidental, octave) => {
+          if (accidental === '#') {
+            const noteIndex = NOTE_NAMES.indexOf(note);
+            if (noteIndex !== -1) {
+              const flatNoteIndex = (noteIndex + 1) % 12;
+              let flatNote = NOTE_NAMES[flatNoteIndex];
+              if (flatNote.includes('#')) {
+                flatNote = NOTE_NAMES[(flatNoteIndex + 1) % 12];
+                const flat = NOTE_NAMES[(flatNoteIndex + 2) % 12];
+                const enharmonic = flat.replace('#', 'b');
+                return enharmonic + octave;
+              } else {
+                const enharmonic = NOTE_NAMES[flatNoteIndex % 12] + 'b';
+                return enharmonic + octave;
+              }
+            }
+          } else if (accidental === 'b') {
+            const noteIndex = NOTE_NAMES.indexOf(note);
+            if (noteIndex !== -1) {
+              const sharpNoteIndex = (noteIndex - 1 + 12) % 12;
+              const sharpNote = NOTE_NAMES[sharpNoteIndex];
+              if (sharpNote.includes('#')) {
+                return sharpNote + octave;
+              } else {
+                return NOTE_NAMES[sharpNoteIndex] + '#' + octave;
+              }
+            }
+          }
+          return match;
+        });
+      });
+      previewArea.value = updatedLines.join('\n');
+      status.className = 'status success';
+      status.textContent = 'File names updated';
+      setTimeout(() => {
+        status.className = 'status';
+        status.textContent = '';
+      }, 2000);
+    }
+  }
   generateSequenceBtn.addEventListener('click', () => {
     generateNoteSequence();
     updateFileList(fileInput.files);
@@ -527,29 +575,29 @@ body {
   copyNamesBtn.addEventListener('click', () => {
     const previewArea = document.getElementById('previewArea');
     if (previewArea && previewArea.value.trim()) {
-        navigator.clipboard.writeText(previewArea.value).then(() => {
-            status.className = 'status success';
-            status.textContent = 'File names copied to clipboard';
-            setTimeout(() => {
-                status.className = 'status';
-                status.textContent = '';
-            }, 2000);
-        }).catch(err => {
-            console.error('Failed to copy:', err);
-            status.className = 'status error';
-            status.textContent = 'Failed to copy file names';
-            setTimeout(() => {
-                status.className = 'status';
-                status.textContent = '';
-            }, 2000);
-        });
-    } else {
-        status.className = 'status error';
-        status.textContent = 'No file names to copy';
+      navigator.clipboard.writeText(previewArea.value).then(() => {
+        status.className = 'status success';
+        status.textContent = 'File names copied to clipboard';
         setTimeout(() => {
-            status.className = 'status';
-            status.textContent = '';
+          status.className = 'status';
+          status.textContent = '';
         }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        status.className = 'status error';
+        status.textContent = 'Failed to copy file names';
+        setTimeout(() => {
+          status.className = 'status';
+          status.textContent = '';
+        }, 2000);
+      });
+    } else {
+      status.className = 'status error';
+      status.textContent = 'No file names to copy';
+      setTimeout(() => {
+        status.className = 'status';
+        status.textContent = '';
+      }, 2000);
     }
   });
   const updateNamesButton = document.getElementById('updateNamesButton');
@@ -586,6 +634,8 @@ body {
       updateFileList(fileInput.files);
     }
   });
+  const enharmonicShiftBtn = document.getElementById('enharmonicShift');
+  enharmonicShiftBtn.addEventListener('click', enharmonicShift);
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropZone.addEventListener(eventName, preventDefaults, false);
     document.body.addEventListener(eventName, preventDefaults, false);
