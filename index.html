@@ -1,3 +1,4 @@
+<html><head><base href=".">
 <title>Audio File Renamer</title>
 <style>
 :root {
@@ -240,7 +241,21 @@ body {
     <div class="status" id="status"></div>
 </div>
 
-<script>document.addEventListener('DOMContentLoaded', () => {
+<script>const sharpToFlatMap = {
+  'C#': 'Db',
+  'D#': 'Eb',
+  'F#': 'Gb',
+  'G#': 'Ab',
+  'A#': 'Bb'
+};
+const flatToSharpMap = {
+  'Db': 'C#',
+  'Eb': 'D#',
+  'Gb': 'F#',
+  'Ab': 'G#',
+  'Bb': 'A#'
+};
+document.addEventListener('DOMContentLoaded', () => {
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
   const fileList = document.getElementById('fileList');
@@ -253,12 +268,33 @@ body {
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   let manualFiles = [];
   let sharpToFlat = true;
+  const sharpToFlatMap = {
+    'C#': 'Db',
+    'D#': 'Eb',
+    'F#': 'Gb',
+    'G#': 'Ab',
+    'A#': 'Bb'
+  };
+  const flatToSharpMap = {
+    'Db': 'C#',
+    'Eb': 'D#',
+    'Gb': 'F#',
+    'Ab': 'G#',
+    'Bb': 'A#'
+  };
   function getMIDINoteInfo(midiNumber) {
-    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const sharpNoteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const flatNoteNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
     const octave = Math.floor(midiNumber / 12) - 1;
     const noteIndex = midiNumber % 12;
+    if (sharpToFlat) {
+      return {
+        noteName: `${flatNoteNames[noteIndex]}${octave}`,
+        midiNumber: midiNumber
+      };
+    }
     return {
-      noteName: `${noteNames[noteIndex]}${octave}`,
+      noteName: `${sharpNoteNames[noteIndex]}${octave}`,
       midiNumber: midiNumber
     };
   }
@@ -521,40 +557,18 @@ body {
     if (currentText) {
       const lines = currentText.split('\n');
       const updatedLines = lines.map(line => {
-        return line.replace(/([A-G])(#?)(-?\d+)/g, (match, note, accidental, octave) => {
-          if (accidental === '#') {
-            const noteIndex = NOTE_NAMES.indexOf(note);
-            if (noteIndex !== -1) {
-              const flatNoteIndex = (noteIndex + 1) % 12;
-              let flatNote = NOTE_NAMES[flatNoteIndex];
-              if (flatNote.includes('#')) {
-                flatNote = NOTE_NAMES[(flatNoteIndex + 1) % 12];
-                const flat = NOTE_NAMES[(flatNoteIndex + 2) % 12];
-                const enharmonic = flat.replace('#', 'b');
-                return enharmonic + octave;
-              } else {
-                const enharmonic = NOTE_NAMES[flatNoteIndex % 12] + 'b';
-                return enharmonic + octave;
-              }
-            }
-          } else if (accidental === 'b') {
-            const noteIndex = NOTE_NAMES.indexOf(note);
-            if (noteIndex !== -1) {
-              const sharpNoteIndex = (noteIndex - 1 + 12) % 12;
-              const sharpNote = NOTE_NAMES[sharpNoteIndex];
-              if (sharpNote.includes('#')) {
-                return sharpNote + octave;
-              } else {
-                return NOTE_NAMES[sharpNoteIndex] + '#' + octave;
-              }
-            }
+        return line.replace(/([A-G][#b]?)(-?\d+)(?=[-_\s]|$)/g, (match, notePart, octave) => {
+          if (sharpToFlat && sharpToFlatMap[notePart]) {
+            return sharpToFlatMap[notePart] + octave;
+          } else if (!sharpToFlat && flatToSharpMap[notePart]) {
+            return flatToSharpMap[notePart] + octave;
           }
           return match;
         });
       });
       previewArea.value = updatedLines.join('\n');
       status.className = 'status success';
-      status.textContent = 'File names updated';
+      status.textContent = `Converted to ${sharpToFlat ? 'flats' : 'sharps'}`;
       setTimeout(() => {
         status.className = 'status';
         status.textContent = '';
@@ -660,3 +674,5 @@ body {
   populateNoteSelects();
 });</script>
 </body></html>
+
+    for (let
