@@ -1,215 +1,327 @@
-<html><head><base href=".">
-<title>Audio File Renamer</title>
-<style>
-:root {
-    --primary: #2196f3;
-    --secondary: #1976d2;
-    --surface: #212121;
-    --text: #ffffff;
-    --border: #424242;
-    --hover: #333333;
-    --instruction-bg: #2c2c2c;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Audio File Renamer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2196f3;
+            --secondary: #1976d2;
+            --surface: #212121;
+            --text: #ffffff;
+            --border: #424242;
+            --hover: #333333;
+            --instruction-bg: #2c2c2c;
+        }
 
-body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background: #121212;
-    color: var(--text);
-}
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: #121212;
+            color: var(--text);
+            -webkit-tap-highlight-color: transparent;
+        }
 
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0;
+        }
 
-.drop-zone {
-    border: 2px dashed var(--border);
-    border-radius: 10px;
-    padding: 40px;
-    text-align: center;
-    background: var(--surface);
-    transition: all 0.3s ease;
-    margin-bottom: 20px;
-}
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 25px 15px;
+            text-align: center;
+            background: var(--surface);
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
 
-.drop-zone.dragover {
-    background: var(--hover);
-    border-color: var(--primary);
-}
+        .drop-zone.dragover {
+            background: var(--hover);
+            border-color: var(--primary);
+        }
 
-.file-list {
-    background: var(--surface);
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 20px;
-}
+        .file-list {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
 
-.file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background: var(--instruction-bg);
-    border-radius: 4px;
-    margin: 10px 0;
-}
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: var(--instruction-bg);
+            border-radius: 4px;
+            margin: 8px 0;
+            font-size: 14px;
+        }
 
-.button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    margin: 0 5px;
-}
+        .button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin: 0 3px;
+            font-size: 14px;
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
 
-.button:hover {
-    background: var(--secondary);
-}
+        .button:hover {
+            background: var(--secondary);
+        }
 
-.pattern-input, .filename-input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    background: var(--instruction-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 4px;
-}
+        .pattern-input, .filename-input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: var(--instruction-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            font-size: 14px;
+        }
 
-.pattern-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+        .pattern-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
 
-.status {
-    margin-top: 20px;
-    padding: 10px;
-    border-radius: 4px;
-    text-align: center;
-}
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+        }
 
-.success {
-    background: #43a047;
-}
+        .success {
+            background: #43a047;
+        }
 
-.error {
-    background: #d32f2f;
-}
+        .error {
+            background: #d32f2f;
+        }
 
-.arrow {
-    margin: 0 10px;
-    color: var(--primary);
-}
+        .arrow {
+            margin: 0 8px;
+            color: var(--primary);
+        }
 
-.file-item span {
-    word-break: break-all;
-    margin: 0 5px;
-}
+        .file-item span {
+            word-break: break-all;
+            margin: 0 5px;
+        }
 
-.manual-input-section {
-    background: var(--surface);
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 20px;
-}
+        .manual-input-section {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
 
-.note-info {
-    color: var(--primary);
-    font-weight: bold;
-}
+        .note-info {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 14px;
+        }
 
-.note-range {
-    margin: 10px 0;
-    padding: 10px;
-    background: var(--instruction-bg);
-    border-radius: 4px;
-}
+        .note-range {
+            margin: 8px 0;
+            padding: 8px;
+            background: var(--instruction-bg);
+            border-radius: 6px;
+            font-size: 14px;
+        }
 
-.note-range select {
-    padding: 5px;
-    margin: 0 5px;
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-}
+        .note-range select {
+            padding: 6px;
+            margin: 0 3px;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            max-width: 100px;
+        }
 
-.generate-button {
-    display: block;
-    margin: 20px auto;
-}
+        .generate-button {
+            display: block;
+            margin: 15px auto;
+        }
 
-.button.generate-button {
-    margin: 0;
-}
+        .button.generate-button {
+            margin: 3px;
+        }
 
-#resetButton {
-    background: #d32f2f;
-}
+        #resetButton {
+            background: #d32f2f;
+        }
 
-#resetButton:hover {
-    background: #b71c1c;
-}
+        #resetButton:hover {
+            background: #b71c1c;
+        }
 
-.preview-field {
-    margin-top: 10px;
-}
+        .preview-field {
+            margin-top: 8px;
+        }
 
-.preview-textarea {
-    width: 100%;
-    min-height: 200px;
-    padding: 10px;
-    background: var(--instruction-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 4px;
-    resize: vertical;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.4;
-    cursor: text;
-}
+        .preview-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            background: var(--instruction-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            cursor: text;
+        }
 
-.preview-textarea:focus {
-    border-color: var(--primary);
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
-}
+        .preview-textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
 
-.button-group {
-    margin-top: 15px;
-}
+        .button-group {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
 
-.button-group .button {
-    min-width: 150px;
-}
+        .button-group .button {
+            min-width: 120px;
+            flex-grow: 1;
+        }
 
-#updateNamesButton {
-    background: var(--primary);
-    margin: 0 5px;
-}
-</style>
+        #updateNamesButton {
+            background: var(--primary);
+            margin: 0 3px;
+        }
+
+        .loaded-files-container {
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .loaded-files-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 8px;
+            background: var(--instruction-bg);
+            border-radius: 6px;
+            padding: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .loaded-file-item {
+            padding: 6px;
+            border-bottom: 1px solid var(--border);
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .loaded-file-item:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-button-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .mobile-button-row .button {
+            flex: 1 1 45%;
+            min-width: 0;
+            padding: 10px 5px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Mobile-specific optimizations */
+        @media (max-width: 480px) {
+            .button {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+            
+            .note-range {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .note-range select {
+                margin: 3px 0;
+                max-width: 100%;
+            }
+            
+            .preview-textarea {
+                min-height: 120px;
+                font-size: 12px;
+            }
+            
+            .loaded-files-list {
+                max-height: 150px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1>Audio File Renamer</h1>
+    <h1 class="text-xl font-bold mb-3"><i class="fas fa-music mr-2"></i>Audio File Renamer</h1>
     
     <div class="drop-zone" id="dropZone">
-        <h2>Drag and Drop Audio Files Here</h2>
-        <p>or</p>
-        <button class="button" onclick="document.getElementById(&apos;fileInput&apos;).click()">Select Files</button>
-        <input type="file" id="fileInput" multiple accept=".wav" style="display: none">
+        <h2><i class="fas fa-cloud-upload-alt mr-2"></i>Drag and Drop Audio Files</h2>
+        <p class="my-2">or</p>
+        <button class="button" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-folder-open mr-2"></i>Select Files
+        </button>
+        <input type="file" id="fileInput" multiple accept=".wav,.aif,.aiff,.mp3" style="display: none">
+    </div>
+
+    <!-- New Files Loaded Container -->
+    <div class="loaded-files-container">
+        <h2 class="text-lg font-semibold mb-2"><i class="fas fa-file-audio mr-2"></i>Files Loaded</h2>
+        <div class="loaded-files-list" id="loadedFilesList">
+            <div class="text-gray-400 italic">No files loaded yet</div>
+        </div>
     </div>
 
     <div class="manual-input-section">
-        <h2>Manual Filename Input</h2>
+        <h2><i class="fas fa-keyboard mr-2"></i>Filename Settings</h2>
         <div class="note-range">
             <label>Note Range: </label>
             <select id="startNote"></select>
@@ -217,31 +329,53 @@ body {
             <select id="endNote"></select>
         </div>
         <div class="pattern-controls">
-            <input type="text" id="manualFilenameInput" class="filename-input" placeholder="Enter base filename (e.g., Fretless_Guitar_RR1)">
+            <input type="text" id="manualFilenameInput" class="filename-input" placeholder="Base filename (e.g., Fretless_Guitar_RR1)">
         </div>
-        <div style="display: flex; justify-content: center; gap: 10px; margin: 20px 0;">
-            <button class="button generate-button" id="generateSequence">Generate Note Sequence</button>
-            <button class="button generate-button" id="enharmonicShift">Enharmonic Shift</button>
-            <button class="button generate-button" id="generateRoundRobin">Generate Round Robin Groups</button>
-            <button class="button" id="resetButton">Reset</button>
-            <button class="button" id="updateNamesButton">Update File Names</button>
+        
+        <div class="mobile-button-row">
+            <button class="button" id="generateSequence">
+                <i class="fas fa-list-ol mr-2"></i>Generate Sequence
+            </button>
+            <button class="button" id="enharmonicShift">
+                <i class="fas fa-exchange-alt mr-2"></i>Enharmonic Shift
+            </button>
+            <button class="button" id="generateRoundRobin">
+                <i class="fas fa-redo mr-2"></i>Round Robin
+            </button>
+            <button class="button" id="resetButton">
+                <i class="fas fa-trash-alt mr-2"></i>Reset
+            </button>
+        </div>
+        <div class="mobile-button-row">
+            <button class="button" id="updateNamesButton">
+                <i class="fas fa-sync-alt mr-2"></i>Update Names
+            </button>
         </div>
     </div>
 
     <div class="file-list" id="fileList">
-        <h2>Files to Process</h2>
+        <h2><i class="fas fa-tasks mr-2"></i>Files to Process</h2>
         <div class="preview-field">
             <textarea id="previewArea" class="preview-textarea"></textarea>
         </div>
-        <div class="button-group" style="display: flex; justify-content: center; gap: 10px; margin-top: 15px;">
-            <button class="button" id="copyNamesBtn">Copy File Names</button>
+        <div class="button-group">
+            <button class="button" id="copyNamesBtn">
+                <i class="fas fa-copy mr-2"></i>Copy Names
+            </button>
+            <button class="button" id="copyNewNamesBtn">
+                <i class="fas fa-file-export mr-2"></i>Export as Text File
+            </button>
+            <button class="button" id="renameFilesBtn">
+                <i class="fas fa-file-export mr-2"></i>Rename Files
+            </button>
         </div>
     </div>
 
     <div class="status" id="status"></div>
 </div>
 
-<script>const sharpToFlatMap = {
+<script>
+const sharpToFlatMap = {
   'C#': 'Db',
   'D#': 'Eb',
   'F#': 'Gb',
@@ -265,6 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const endNoteSelect = document.getElementById('endNote');
   const generateSequenceBtn = document.getElementById('generateSequence');
   const resetButton = document.getElementById('resetButton');
+  const loadedFilesList = document.getElementById('loadedFilesList');
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   let manualFiles = [];
   let sharpToFlat = true;
@@ -282,6 +417,23 @@ document.addEventListener('DOMContentLoaded', () => {
     'Ab': 'G#',
     'Bb': 'A#'
   };
+  
+  function updateLoadedFilesList(files) {
+    loadedFilesList.innerHTML = '';
+    
+    if (!files || files.length === 0) {
+      loadedFilesList.innerHTML = '<div class="text-gray-400 italic">No files loaded yet</div>';
+      return;
+    }
+    
+    files.forEach(file => {
+      const fileItem = document.createElement('div');
+      fileItem.className = 'loaded-file-item';
+      fileItem.textContent = file.name;
+      loadedFilesList.appendChild(fileItem);
+    });
+  }
+  
   function getMIDINoteInfo(midiNumber) {
     const sharpNoteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const flatNoteNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -298,6 +450,30 @@ document.addEventListener('DOMContentLoaded', () => {
       midiNumber: midiNumber
     };
   }
+  
+  function extractNoteRange(filenames) {
+    const rangePatterns = [
+      /([A-G][#b]?\d+)[_\s-](?:to|thru)[_\s-]([A-G][#b]?\d+)/i,
+      /([A-G][#b]?\d+)[_\s-]?[-]?[_\s]?([A-G][#b]?\d+)/,
+      /([A-G][#b]?\d+)to([A-G][#b]?\d+)/i
+    ];
+    
+    for (let filename of filenames) {
+      filename = filename.replace(/\.[^/.]+$/, "");
+      
+      for (let pattern of rangePatterns) {
+        const match = filename.match(pattern);
+        if (match) {
+          return {
+            start: match[1],
+            end: match[2]
+          };
+        }
+      }
+    }
+    return null;
+  }
+  
   function extractNoteInfo(filename) {
     let match = filename.match(/^(\d+)_([A-G]#?\-?\d+)/);
     if (match) {
@@ -329,23 +505,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return null;
   }
+  
   function noteNameToMIDINumber(noteName) {
-    const match = noteName.match(/([A-G]#?)(-?\d+)/);
+    const match = noteName.match(/([A-G][#b]?)(-?\d+)/);
     if (!match) return null;
     const note = match[1];
     const octave = parseInt(match[2]);
     const noteToIndex = {
-      'C': 0,
-      'C#': 1,
-      'D': 2,
-      'D#': 3,
+      'C': 0, 'C#': 1, 'Db': 1,
+      'D': 2, 'D#': 3, 'Eb': 3,
       'E': 4,
-      'F': 5,
-      'F#': 6,
-      'G': 7,
-      'G#': 8,
-      'A': 9,
-      'A#': 10,
+      'F': 5, 'F#': 6, 'Gb': 6,
+      'G': 7, 'G#': 8, 'Ab': 8,
+      'A': 9, 'A#': 10, 'Bb': 10,
       'B': 11
     };
     const noteIndex = noteToIndex[note];
@@ -354,6 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return null;
   }
+  
   function populateNoteSelects() {
     const notes = [];
     for (let octave = -1; octave <= 9; octave++) {
@@ -373,7 +546,27 @@ document.addEventListener('DOMContentLoaded', () => {
     startNoteSelect.value = 'C-1';
     endNoteSelect.value = 'G9';
   }
+  
   function adjustNoteRange(files) {
+    const filenames = Array.from(files).map(file => file.name);
+    const noteRange = extractNoteRange(filenames);
+    
+    if (noteRange) {
+      if (startNoteSelect.querySelector(`option[value="${noteRange.start}"]`)) {
+        startNoteSelect.value = noteRange.start;
+      }
+      if (endNoteSelect.querySelector(`option[value="${noteRange.end}"]`)) {
+        endNoteSelect.value = noteRange.end;
+      }
+      status.className = 'status success';
+      status.textContent = `Note range found in filename: ${noteRange.start} to ${noteRange.end}`;
+      setTimeout(() => {
+        status.className = 'status';
+        status.textContent = '';
+      }, 3000);
+      return;
+    }
+    
     let minMidi = Infinity;
     let maxMidi = -Infinity;
     let hasValidNotes = false;
@@ -396,9 +589,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+  
   function updateFileList(files) {
     const buttonGroup = document.querySelector('.button-group');
-    fileList.innerHTML = '<h2>Files to Process</h2>';
+    fileList.innerHTML = '<h2><i class="fas fa-tasks mr-2"></i>Files to Process</h2>';
     const previewField = document.createElement('div');
     previewField.className = 'preview-field';
     const previewArea = document.createElement('textarea');
@@ -432,18 +626,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       noteGroups.forEach((filesInGroup, noteKey) => {
         filesInGroup.forEach((fileInfo, index) => {
+          let baseName = manualFilenameInput.value.trim();
+          if (!baseName) {
+            baseName = "Unnamed";
+          }
           if (fileInfo.midiNumber) {
-            previewContent += `${fileInfo.originalName} -> ${String(fileInfo.midiNumber).padStart(2, '0')}_${fileInfo.noteName}_${baseFileName}_${index + 1}\n`;
+            previewContent += `${String(fileInfo.midiNumber).padStart(2, '0')}_${fileInfo.noteName}_${baseName}_RR${index + 1}\n`;
           }
         });
       });
     }
     previewArea.value = previewContent.trim();
   }
+  
   function handleFiles(e) {
     const files = [...e.target.files];
     if (files.length > 0) {
       adjustNoteRange(files);
+      updateLoadedFilesList(files);
     }
     updateFileList(files);
     if (files.length > 0) {
@@ -451,6 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
       status.textContent = `${files.length} files ready for processing`;
     }
   }
+  
   function handleDrop(e) {
     const dt = e.dataTransfer;
     const files = dt.files;
@@ -460,6 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  
   function generateNoteSequence() {
     const baseFileName = manualFilenameInput.value.trim();
     const startMIDI = noteNameToMIDINumber(startNoteSelect.value);
@@ -479,15 +681,47 @@ document.addEventListener('DOMContentLoaded', () => {
       status.textContent = 'Start note must be lower than or equal to end note';
       return;
     }
+    
     manualFiles = [];
-    for (let midi = startMIDI; midi <= endMIDI; midi++) {
-      const noteName = getMIDINoteInfo(midi).noteName;
-      let newFileName = `${String(midi).padStart(2, '0')}_${noteName}`;
-      if (baseFileName) {
-        newFileName += `_${baseFileName}`;
+    
+    if (startMIDI === endMIDI) {
+      // Single note case - generate numbered sequence
+      const noteName = getMIDINoteInfo(startMIDI).noteName;
+      const files = fileInput.files;
+      
+      if (files && files.length > 0) {
+        // If files are loaded, generate one entry per file
+        for (let i = 0; i < files.length; i++) {
+          let newFileName = `${String(startMIDI).padStart(2, '0')}_${noteName}`;
+          if (baseFileName) {
+            newFileName += `_${baseFileName}`;
+          }
+          newFileName += `_${String(i + 1).padStart(2, '0')}`;
+          manualFiles.push(newFileName);
+        }
+      } else {
+        // If no files loaded, just generate 5 entries as example
+        for (let i = 1; i <= 5; i++) {
+          let newFileName = `${String(startMIDI).padStart(2, '0')}_${noteName}`;
+          if (baseFileName) {
+            newFileName += `_${baseFileName}`;
+          }
+          newFileName += `_${String(i).padStart(2, '0')}`;
+          manualFiles.push(newFileName);
+        }
       }
-      manualFiles.push(newFileName);
+    } else {
+      // Normal range case
+      for (let midi = startMIDI; midi <= endMIDI; midi++) {
+        const noteName = getMIDINoteInfo(midi).noteName;
+        let newFileName = `${String(midi).padStart(2, '0')}_${noteName}`;
+        if (baseFileName) {
+          newFileName += `_${baseFileName}`;
+        }
+        manualFiles.push(newFileName);
+      }
     }
+    
     updateFileList(fileInput.files);
     status.className = 'status success';
     status.textContent = `Generated ${manualFiles.length} file names`;
@@ -496,40 +730,63 @@ document.addEventListener('DOMContentLoaded', () => {
       status.textContent = '';
     }, 2000);
   }
+  
   function generateRoundRobinGroups() {
-    const baseFileName = manualFilenameInput.value.trim();
-    if (!baseFileName) {
+    const previewArea = document.getElementById('previewArea');
+    let currentText = previewArea.value.trim();
+    
+    if (!currentText) {
       status.className = 'status error';
-      status.textContent = 'Please enter a base filename';
+      status.textContent = 'No files to process - please add files first';
       setTimeout(() => {
         status.className = 'status';
         status.textContent = '';
       }, 2000);
       return;
     }
-    manualFiles = [];
-    for (let i = 1; i <= 16; i++) {
-      const newFileName = `${baseFileName}_RR${i}`;
-      manualFiles.push(newFileName);
-    }
-    const previewArea = document.getElementById('previewArea');
-    let previewContent = '';
-    manualFiles.forEach((filename, index) => {
-      previewContent += `${filename}\n`;
+    
+    const lines = currentText.split('\n');
+    const updatedLines = [];
+    let rrCounter = 1;
+    
+    lines.forEach(line => {
+      if (line.includes('->')) {
+        // Handle lines with "original -> new" format
+        const parts = line.split(' -> ');
+        const originalName = parts[0];
+        let newName = parts[1];
+        
+        // Remove existing RR suffix if present
+        newName = newName.replace(/-RR\d+$/, '');
+        
+        // Add new RR suffix
+        newName += `-RR${rrCounter}`;
+        updatedLines.push(`${originalName} -> ${newName}`);
+      } else {
+        // Handle standalone filenames
+        let filename = line.replace(/-RR\d+$/, '');
+        filename += `-RR${rrCounter}`;
+        updatedLines.push(filename);
+      }
+      
+      rrCounter++;
+      if (rrCounter > 16) rrCounter = 1; // Reset after RR16
     });
-    previewArea.value = previewContent.trim();
+    
+    previewArea.value = updatedLines.join('\n');
     status.className = 'status success';
-    status.textContent = `Generated ${manualFiles.length} round robin files`;
+    status.textContent = `Added Round Robin suffixes to ${updatedLines.length} files`;
     setTimeout(() => {
       status.className = 'status';
       status.textContent = '';
     }, 2000);
   }
+  
   function resetAll() {
     manualFilenameInput.value = '';
     startNoteSelect.value = 'C-1';
     endNoteSelect.value = 'G9';
-    fileList.innerHTML = '<h2>Files to Process</h2>';
+    fileList.innerHTML = '<h2><i class="fas fa-tasks mr-2"></i>Files to Process</h2>';
     const previewField = document.createElement('div');
     previewField.className = 'preview-field';
     const previewArea = document.createElement('textarea');
@@ -538,18 +795,20 @@ document.addEventListener('DOMContentLoaded', () => {
     fileList.appendChild(previewField);
     const buttonGroup = document.createElement('div');
     buttonGroup.className = 'button-group';
-    buttonGroup.style = 'display: flex; justify-content: center; gap: 10px; margin-top: 15px;';
+    buttonGroup.style = 'display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px;';
     const copyNamesBtn = document.createElement('button');
     copyNamesBtn.className = 'button';
     copyNamesBtn.id = 'copyNamesBtn';
-    copyNamesBtn.textContent = 'Copy File Names';
+    copyNamesBtn.innerHTML = '<i class="fas fa-copy mr-2"></i>Copy Names';
     buttonGroup.appendChild(copyNamesBtn);
     fileList.appendChild(buttonGroup);
     manualFiles = [];
     fileInput.value = '';
+    updateLoadedFilesList([]);
     status.className = 'status';
     status.textContent = '';
   }
+  
   function enharmonicShift() {
     sharpToFlat = !sharpToFlat;
     const previewArea = document.getElementById('previewArea');
@@ -575,104 +834,292 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 2000);
     }
   }
+  
   generateSequenceBtn.addEventListener('click', () => {
     generateNoteSequence();
     updateFileList(fileInput.files);
   });
+  
   const generateRoundRobinBtn = document.getElementById('generateRoundRobin');
   generateRoundRobinBtn.addEventListener('click', generateRoundRobinGroups);
+  
   resetButton.addEventListener('click', resetAll);
+  
   startNoteSelect.addEventListener('change', () => {});
   endNoteSelect.addEventListener('change', () => {});
+  
   const copyNamesBtn = document.getElementById('copyNamesBtn');
-  copyNamesBtn.addEventListener('click', () => {
+  copyNamesBtn.addEventListener('click', async () => {
     const previewArea = document.getElementById('previewArea');
-    if (previewArea && previewArea.value.trim()) {
-      navigator.clipboard.writeText(previewArea.value).then(() => {
-        status.className = 'status success';
-        status.textContent = 'File names copied to clipboard';
-        setTimeout(() => {
-          status.className = 'status';
-          status.textContent = '';
-        }, 2000);
-      }).catch(err => {
-        console.error('Failed to copy:', err);
-        status.className = 'status error';
-        status.textContent = 'Failed to copy file names';
-        setTimeout(() => {
-          status.className = 'status';
-          status.textContent = '';
-        }, 2000);
-      });
-    } else {
+    if (!previewArea || !previewArea.value.trim()) {
       status.className = 'status error';
       status.textContent = 'No file names to copy';
       setTimeout(() => {
         status.className = 'status';
         status.textContent = '';
       }, 2000);
+      return;
     }
-  });
-  const updateNamesButton = document.getElementById('updateNamesButton');
-  updateNamesButton.addEventListener('click', () => {
-    if (fileInput.files.length > 0 || manualFiles.length > 0) {
-      const baseFileName = manualFilenameInput.value.trim();
-      if (baseFileName) {
-        if (fileInput.files.length > 0) {
-          updateFileList(fileInput.files);
-        } else {
-          generateRoundRobinGroups();
-        }
+
+    try {
+      // Fallback for browsers without clipboard API
+      if (!navigator.clipboard) {
+        previewArea.select();
+        document.execCommand('copy');
         status.className = 'status success';
-        status.textContent = 'File names updated successfully';
+        status.textContent = 'File names copied (fallback method)';
       } else {
-        status.className = 'status error';
-        status.textContent = 'Please enter a base filename';
+        await navigator.clipboard.writeText(previewArea.value);
+        status.className = 'status success';
+        status.textContent = 'File names copied to clipboard';
       }
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      status.className = 'status error';
+      status.textContent = 'Failed to copy - please try again or use Ctrl+C';
+    }
+    setTimeout(() => {
+      status.className = 'status';
+      status.textContent = '';
+    }, 3000);
+  });
+
+  const copyNewNamesBtn = document.getElementById('copyNewNamesBtn');
+  copyNewNamesBtn.addEventListener('click', () => {
+    const previewArea = document.getElementById('previewArea');
+    if (previewArea && previewArea.value.trim()) {
+      const lines = previewArea.value.split('\n');
+      let newFileNames = [];
+      
+      // Extract new file names (right side of "->" or entire line if no arrow)
+      lines.forEach(line => {
+        if (line.includes('->')) {
+          const parts = line.split('->');
+          if (parts.length > 1) {
+            newFileNames.push(parts[1].trim());
+          }
+        } else {
+          newFileNames.push(line.trim());
+        }
+      });
+
+      // Create a text file with the names
+      const textContent = newFileNames.join('\n');
+      const blob = new Blob([textContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create download link
+      const a = document.createElement('a');
+      a.href = url;
+      // Get base filename or use default
+      const baseName = manualFilenameInput.value.trim() || 'exported_filenames';
+      
+      // Format current date as DDMMYYYYHHmm
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const dateStr = `${day}${month}${year}${hours}${minutes}`;
+      a.download = `${baseName}_${dateStr}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
       setTimeout(() => {
-        status.textContent = '';
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+
+      status.className = 'status success';
+      status.textContent = 'File names exported as text file';
+      setTimeout(() => {
         status.className = 'status';
+        status.textContent = '';
       }, 2000);
     } else {
       status.className = 'status error';
-      status.textContent = 'No files to update';
+      status.textContent = 'No file names to export';
       setTimeout(() => {
-        status.textContent = '';
         status.className = 'status';
+        status.textContent = '';
       }, 2000);
     }
   });
+
+  const renameFilesBtn = document.getElementById('renameFilesBtn');
+  renameFilesBtn.addEventListener('click', async () => {
+    const previewArea = document.getElementById('previewArea');
+    if (previewArea && previewArea.value.trim()) {
+      const lines = previewArea.value.split('\n');
+      const fileRenames = lines.map(line => {
+        const parts = line.split(' -> ');
+        return { oldName: parts[0], newName: parts[1] };
+      }).filter(Boolean);
+
+      status.className = 'status';
+      status.textContent = 'Please select all files to rename at once (tap and hold to multi-select)';
+      
+      try {
+        await renameFiles(fileRenames);
+        status.className = 'status success';
+        status.textContent = 'Files renamed successfully - check your downloads folder';
+        setTimeout(() => {
+          status.className = 'status';
+          status.textContent = '';
+        }, 3000);
+      } catch (err) {
+        console.error('Failed to rename files:', err);
+        status.className = 'status error';
+        status.textContent = `Failed to rename files: ${err.message}`;
+        setTimeout(() => {
+          status.className = 'status';
+          status.textContent = '';
+        }, 3000);
+      }
+    } else {
+      status.className = 'status error';
+      status.textContent = 'No files to rename - please add files first';
+      setTimeout(() => {
+        status.className = 'status';
+        status.textContent = '';
+      }, 2000);
+    }
+  });
+
+  async function renameFiles(fileRenames) {
+    return new Promise((resolve) => {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.multiple = true;
+      fileInput.accept = '.wav,.aif,.aiff,.mp3';
+      fileInput.style.display = 'none';
+      
+      fileInput.onchange = async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) {
+          resolve(false);
+          return;
+        }
+
+        // Match selected files to rename mappings
+        const renameMap = new Map();
+        files.forEach(file => {
+          const match = fileRenames.find(r => r.oldName === file.name);
+          if (match) {
+            renameMap.set(file, match.newName);
+          }
+        });
+
+        // Process files sequentially with progress
+        for (const [file, newName] of renameMap) {
+          status.textContent = `Processing: ${file.name} → ${newName}`;
+          await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for UI update
+          
+          // Create download link for renamed file
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(file);
+          a.download = newName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        }
+
+        resolve(true);
+      };
+
+      document.body.appendChild(fileInput);
+      fileInput.click();
+      document.body.removeChild(fileInput);
+    });
+  }
+  
+  const updateNamesButton = document.getElementById('updateNamesButton');
+  updateNamesButton.addEventListener('click', () => {
+    const previewArea = document.getElementById('previewArea');
+    const baseFileName = manualFilenameInput.value.trim();
+    
+    if (!baseFileName) {
+      status.className = 'status error';
+      status.textContent = 'Please enter a base filename';
+      setTimeout(() => {
+        status.className = 'status';
+        status.textContent = '';
+      }, 2000);
+      return;
+    }
+
+    if (previewArea && previewArea.value.trim()) {
+      // Update existing preview content with new base name
+      const lines = previewArea.value.split('\n');
+      const updatedLines = lines.map(line => {
+        if (line.includes('_')) {
+          const parts = line.split('_');
+          if (parts.length >= 3) {
+            // Keep MIDI number and note, replace base name
+            return `${parts[0]}_${parts[1]}_${baseFileName}${parts.length > 3 ? '_' + parts.slice(3).join('_') : ''}`;
+          }
+        }
+        return line;
+      });
+      previewArea.value = updatedLines.join('\n');
+      status.className = 'status success';
+      status.textContent = 'File names updated with new base name';
+    } else if (fileInput.files.length > 0) {
+      updateFileList(fileInput.files);
+      status.className = 'status success';
+      status.textContent = 'File names regenerated with new base name';
+    } else {
+      status.className = 'status error';
+      status.textContent = 'No files to update - please load files first';
+    }
+    setTimeout(() => {
+      status.className = 'status';
+      status.textContent = '';
+    }, 2000);
+  });
+  
   manualFilenameInput.addEventListener('input', () => {
     if (fileInput.files.length > 0) {
       updateFileList(fileInput.files);
     }
   });
+  
   const enharmonicShiftBtn = document.getElementById('enharmonicShift');
   enharmonicShiftBtn.addEventListener('click', enharmonicShift);
+  
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropZone.addEventListener(eventName, preventDefaults, false);
     document.body.addEventListener(eventName, preventDefaults, false);
   });
+  
   ['dragenter', 'dragover'].forEach(eventName => {
     dropZone.addEventListener(eventName, highlight, false);
   });
+  
   ['dragleave', 'drop'].forEach(eventName => {
     dropZone.addEventListener(eventName, unhighlight, false);
   });
+  
   function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
   }
+  
   function highlight(e) {
     dropZone.classList.add('dragover');
   }
+  
   function unhighlight(e) {
     dropZone.classList.remove('dragover');
   }
+  
   dropZone.addEventListener('drop', handleDrop, false);
   fileInput.addEventListener('change', handleFiles, false);
   populateNoteSelects();
-});</script>
-</body></html>
-
-    for (let
+});
+</script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=Aesyd/audio-file-renamer-v2-0" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
